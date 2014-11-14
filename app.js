@@ -1,10 +1,18 @@
 (function() {
-    var todoapp = new ToMvc();
-    var todolist = document.querySelector('#todolist');
+    var todoapp       = new ToMvc();
+    var todolist      = document.querySelector('#todolist');
+    var todolistView  = todoapp.registerView( 'todolist', todolist );
+    var todolistModel = todoapp.registerModel( 'todolist' );
+    var nrTodos       = 0;
 
-    var todolistView = todoapp.registerView( 'todolist', todolist );
+    function init() {
+        document.querySelector('#add-todo button').addEventListener( 'click', addTodo, false);
 
-    document.querySelector('#add-todo button').addEventListener( 'click', addTodo, false);
+        todolistModel.listenTo( 'todo:added', function( data ) {
+            var key = nrTodos++;
+            localStorage.setItem( nrTodos, data );
+        });
+    }
 
     function addTodo() {
         var text = window.prompt('enter event');
@@ -20,5 +28,9 @@
         // Immediately ask for another todo to enter
         addTodo();
     }
+
+
+    // GO!
+    init();
 
 }());

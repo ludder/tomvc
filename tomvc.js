@@ -1,9 +1,12 @@
 // Todo, keep away from global space
 
 var ToMvc = function() {
-    this.views  = [];
-    this.models = [];
-    this.events = [];
+
+    var base = this;
+
+    base.views  = [];
+    base.models = [];
+    base.events = [];
 
     this.listen = function( event, fn ) {
         base.events.push( {
@@ -19,18 +22,20 @@ var ToMvc = function() {
                 item.callback( data );
             }
         });
+        // DEBUG
+        console.info('Event "' + event + '" broadcasted with data: ', data );
     }
 
 };
 
 ToMvc.prototype.registerView = function( name, el ) {
-    var view = new base.View( this, name, el );
+    var view = new this.View( this, name, el );
     this.views.push( view );
     return view;
 };
 
 ToMvc.prototype.registerModel = function( name ) {
-    var model = new base.Model( this, name );
+    var model = new this.Model( this, name );
     this.models.push( model );
     return model;
 };
@@ -47,7 +52,7 @@ ToMvc.prototype.View = function( base, name, el ) {
     };
     this.broadcast = function( event, data ) {
         base.broadcastTo.call( this, event, data );
-    }
+    };
 };
 
 ToMvc.prototype.Model = function( base, name ) {
@@ -55,20 +60,23 @@ ToMvc.prototype.Model = function( base, name ) {
     this.name = name ? name : 'model';
     this.broadcast = function( event ) {
         base.broadcastTo.call( this, event, 'apples' );
-    }
+    };
+    this.listenTo = function( event, callback ) {
+        base.listen.call( this, event, callback );
+    };
+
 };
 
 
 // TESTS
 
-var base  = new ToMvc();
-var viewA = base.registerView( 'A', 'element' );
-viewA.listenTo( 'eventA' );
-viewA.listenTo( 'eventB' );
+// var myTomvc  = new ToMvc();
+// var viewA = myTomvc.registerView( 'A', 'element' );
+// viewA.listenTo( 'eventA' );
+// viewA.listenTo( 'eventB' );
 
-var viewB = base.registerView( 'B', 'element' );
-viewB.listenTo( 'eventB' );
+// var viewB = myTomvc.registerView( 'B', 'element' );
+// viewB.listenTo( 'eventB' );
 
-var modelA = base.registerModel( 'C' );
-modelA.broadcast ( 'eventB');
-
+// var modelA = myTomvc.registerModel( 'C' );
+// modelA.broadcast ( 'eventB');
