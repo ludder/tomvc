@@ -1,82 +1,59 @@
-// Todo, keep away from global space
+var ToMvc = {
+    Controller : function() {
+        var controller = this;
 
-var ToMvc = function() {
+        this.views     = [];
+        this.models    = [];
+        this.events    = [];
 
-    var base = this;
-
-    base.views  = [];
-    base.models = [];
-    base.events = [];
-
-    this.listen = function( event, fn ) {
-        base.events.push( {
-            view     : this.name,
-            event    : event,
-            callback : fn.bind( this )
-        });
+        this.getViews = function() {
+            return this.views;
+        };
+        this.getModels = function() {
+            return this.models;
+        };
+        this.getEvents = function() {
+            return this.events;
+        };
+        this.addView = function( name ) {
+            this.views.push( name );
+        };
+        this.addModel = function( name ) {
+            this.models.push( name );
+        };
+        this.addEvent = function( eventname, callback ) {
+            controller.events.push( eventname, callback );
+            console.info('events:', controller.events);
+        }
+    },
+    View : function( name ) {
+        var controller = new ToMvc.Controller;
+        this.name = name ? name : 'view';
+        this.getName = function() {
+            return this.name;
+        };
+        this.listenTo = function( event, callback ) {
+            controller.addEvent.call( this, event, function( data ) {
+                console.info('view ' + this.name + ' called listener with data: ' + data );
+            });
+        }
+    },
+    Model : function() {
+        return 1;
     }
+}
 
-    this.broadcastTo = function ( event, data ) {
-        base.events.forEach( function( item ) {
-            if ( item.event === event ) {
-                item.callback( data );
-            }
-        });
-        // DEBUG
-        console.info('Event "' + event + '" broadcasted with data: ', data );
-    }
+function subView( name ) {
+    var default_name = this.name;
+    this.name        = name ? name : default_name;
 
-};
+    console.info('subview instance name = ', this.name);
+    console.info('pap', this.getName());
+}
+subView.prototype = new ToMvc.View;
 
-ToMvc.prototype.registerView = function( name, el ) {
-    var view = new this.View( this, name, el );
-    this.views.push( view );
-    return view;
-};
+var tom = new subView();
+tom.listenTo(1,2);
+// console.info('naam =', tom );
+console.info('naam =',tom.getName() );
 
-ToMvc.prototype.registerModel = function( name ) {
-    var model = new this.Model( this, name );
-    this.models.push( model );
-    return model;
-};
-
-
-ToMvc.prototype.View = function( base, name, el ) {
-    this.base = base;
-    this.name = name ? name : 'view';
-    this.el   = el;
-    this.listenTo = function( event ) {
-        base.listen.call( this, event, function( data ) {
-            console.info('view ' + this.name + ' called listener with data: ' + data );
-        } );
-    };
-    this.broadcast = function( event, data ) {
-        base.broadcastTo.call( this, event, data );
-    };
-};
-
-ToMvc.prototype.Model = function( base, name ) {
-    this.base = base;
-    this.name = name ? name : 'model';
-    this.broadcast = function( event ) {
-        base.broadcastTo.call( this, event, 'apples' );
-    };
-    this.listenTo = function( event, callback ) {
-        base.listen.call( this, event, callback );
-    };
-
-};
-
-
-// TESTS
-
-// var myTomvc  = new ToMvc();
-// var viewA = myTomvc.registerView( 'A', 'element' );
-// viewA.listenTo( 'eventA' );
-// viewA.listenTo( 'eventB' );
-
-// var viewB = myTomvc.registerView( 'B', 'element' );
-// viewB.listenTo( 'eventB' );
-
-// var modelA = myTomvc.registerModel( 'C' );
-// modelA.broadcast ( 'eventB');
