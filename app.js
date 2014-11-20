@@ -1,7 +1,7 @@
 (function() {
     var todolist      = document.querySelector('#todolist');
-    var todolistView  = new ToMvc.View( 'todolist', todolist );
-    var todolistModel = new ToMvc.registerModel( 'todolist' );
+    var todolistView  = new ToMvc.View( 'todolist', '#todolist' );
+    var todolistModel = new ToMvc.Model( 'todolist' );
     var nrTodos       = 0;
 
     function init() {

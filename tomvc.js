@@ -4,45 +4,63 @@ var ToMvc = {
         models : [],
         events : [],
 
-        getViews: function() {
-            return this.views;
+        getViews : function() {
+            return ToMvc.Controller.views;
         },
-        // this.getModels = function() {
-        //     return this.models;
-        // };
-        // this.getEvents = function() {
-        //     return this.events;
-        // };
+        getModels : function() {
+            return ToMvc.Controller.models;
+        },
+        getEvents : function() {
+            return ToMvc.Controller.events;
+        },
         addView : function( name ) {
-            this.views.push( name );
+            ToMvc.Controller.views.push( name );
         },
-        // this.addModel = function( name ) {
-        //     this.models.push( name );
-        //     return controller;
-        // };
-        // this.addEvent = function( eventname, callback ) {
-        //     controller.events.push( eventname, callback );
-        //     console.info('events:', controller.events);
-        // }
+        addModel : function( name ) {
+            ToMvc.Controller.models.push( name );
+        },
+        addEvent : function( eventname, callback ) {
+            ToMvc.Controller.events.push( { 'eventname' : eventname, 'callback' : callback} );
+            // console.info('events:', ToMvc.Controller.events);
+        },
+        triggerEvent : function( eventname, data ) {
+            ToMvc.Controller.events.forEach( function( event ) {
+                if ( event.eventname === eventname ) {
+                    event.callback( data );
+                }
+            });
+        }
     },
     View : function( name, element ) {
         // var controller = ToMvc.Controller; // Not OK, creates a new controller every time a view is created
-        this.name      = name ? name : 'view';
-        this.el        = document.querySelector( element );
+        this.name = name ? name : 'view';
+        this.el   = document.querySelector( element );
 
-        var controller = ToMvc.Controller.addView( this.name );
+        ToMvc.Controller.addView( this.name );
 
         this.getName = function() {
             return this.name;
         };
         this.listenTo = function( event, callback ) {
-            // controller.addEvent.call( this, event, function( data ) {
-            //     console.info('view ' + this.name + ' called listener with data: ' + data );
-            // });
+            ToMvc.Controller.addEvent.call( this, event, callback);
+        };
+        this.broadcast = function( event, data ) {
+            ToMvc.Controller.triggerEvent( event, data );
         };
     },
-    Model : function() {
-        return 1;
+    Model : function( name ) {
+        this.name = name ? name : 'model';
+        ToMvc.Controller.addModel( this.name );
+
+        this.getName = function() {
+            return this.name;
+        };
+        this.listenTo = function( event, callback ) {
+            ToMvc.Controller.addEvent.call( this, event, callback);
+        };
+        this.broadcast = function( event, data ) {
+            ToMvc.Controller.triggerEvent( event, data );
+        };
     },
 }
 
@@ -54,13 +72,14 @@ function subView( name ) {
 subView.prototype = new ToMvc.View;
 // Example of how to create a derivate View
 
+
 // var tom = new subView('aap');
 // var view = new ToMvc.View();
 // var tom = view.extend( 'testje');
 var tom = new ToMvc.View('testje');
-console.info('con',  ToMvc.Controller.getViews() );
+// console.info('con',  ToMvc.Controller.getViews() );
 
 tom.listenTo(1,2);
 // console.info('naam =', tom );
-console.info('naam =',tom.getName() );
+// console.info('naam =',tom.getName() );
 
