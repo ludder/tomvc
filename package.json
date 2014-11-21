@@ -1,0 +1,26 @@
+{
+  "name": "ToMvc",
+  "version": "0.1.0",
+  "description": "Basic MVC framework",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/ludder/tomvc.git"
+  },
+  "keywords": [
+    "javascript",
+    "mvc"
+  ],
+  "author": "Tom Greuter",
+  "license": "BSD",
+  "bugs": {
+    "url": "https://github.com/ludder/tomvc/issues"
+  },
+  "homepage": "https://github.com/ludder/tomvc",
+  "devDependencies": {
+    "grunt": "^0.4.5"
+  }
+}
