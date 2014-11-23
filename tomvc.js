@@ -34,59 +34,54 @@ var ToMvc = {
             } );
         }
     },
-    View: function( name, element ) {
+    View: {
         // var controller = ToMvc.Controller; // Not OK, creates a new controller every time a view is created
-        this.name = name ? name : 'view';
-        this.el = document.querySelector( element );
-
-        ToMvc.Controller.addView( this.name );
-
-        this.getName = function() {
+        name: 'view',
+        el: null,
+        init: function( name, element ) {
+            this.setName( name );
+            this.el = element;
+            ToMvc.Controller.addView( name );
+        },
+        getName: function() {
             return this.name;
-        };
-        this.listenTo = function( event, callback ) {
+        },
+        setName: function( name ) {
+            this.name = name;
+        },
+        listenTo: function( event, callback ) {
             ToMvc.Controller.addEvent.call( this, event, callback );
-        };
-        this.broadcast = function( event, data ) {
+        },
+        broadcast: function( event, data ) {
             ToMvc.Controller.triggerEvent( event, data );
-        };
+        },
     },
-    Model: function( name ) {
-        this.name = name ? name : 'model';
+    Model: {
+        name: 'model',
 
-        ToMvc.Controller.addModel( this.name );
-
-        this.getName = function() {
+        init: function( name ) {
+            this.setName( name );
+            ToMvc.Controller.addModel( this.name );
+        },
+        getName: function() {
             return this.name;
-        };
-        this.setName = function( name ) {
+        },
+        setName: function( name ) {
             this.name = name;
             // TODO change name in controller model array
-        };
-        this.listenTo = function( event, callback ) {
+        },
+        listenTo: function( event, callback ) {
             ToMvc.Controller.addEvent.call( this, event, callback );
-        };
-        this.broadcast = function( event, data ) {
+        },
+        broadcast: function( event, data ) {
             ToMvc.Controller.triggerEvent( event, data );
-        };
+        },
     },
 }
 
 // Example of how to create a derivate View
-function subView( name ) {
-    var default_name = this.name;
-    this.name = name ? name : default_name;
-}
-subView.prototype = new ToMvc.View;
+var tom = Object.create( ToMvc.View );
+tom.init( 'testje', 'body' );
 // Example of how to create a derivate View
 
-
-// var tom = new subView('aap');
-// var view = new ToMvc.View();
-// var tom = view.extend( 'testje');
-var tom = new ToMvc.View( 'testje' );
-// console.info('con',  ToMvc.Controller.getViews() );
-
 tom.listenTo( 1, 2 );
-// console.info('naam =', tom );
-// console.info('naam =',tom.getName() );
