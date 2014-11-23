@@ -2,20 +2,15 @@
     var todolist = document.querySelector( '#todolist' );
     var todolistView = new ToMvc.View( 'todolist', '#todolist' );
     var todolistModel = new ToMvc.Model( 'todolist' );
-
-
-    // var todolistModel = function() {
-    //         this.name = 'todolist';
-    //     }
-        // todolistModel.prototype = new ToMvc.View;
+// TODO, create another app, to make sure that they do not interfere
 
 
     function init() {
         document.querySelector( '#add-todo button' ).addEventListener( 'click', addTodo, false );
 
-        // console.info( 'model', todolistModel );
-        // var currentTodos = todolistModel.getCurrentTodos();
-        var currentTodos = getCurrentTodos();
+        console.info( 'model', todolistModel );
+        var currentTodos = todolistModel.getCurrentTodos();
+        // var currentTodos = getCurrentTodos();
         writeCurrentTodos( currentTodos );
 
         todolistModel.listenTo( 'todo:added', function( data ) {
@@ -25,8 +20,8 @@
     }
 
     // model method
-    // todolistModel.prototype.getCurrentTodos = function() {
-    function getCurrentTodos() {
+    todolistModel.getCurrentTodos = function() {
+    // function getCurrentTodos() {
         var list = [];
         for ( var key in localStorage ) {
             list.push( window.localStorage.getItem( key ) );
