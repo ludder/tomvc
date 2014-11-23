@@ -1,36 +1,64 @@
-(function() {
-    var todoapp       = new ToMvc();
-    var todolist      = document.querySelector('#todolist');
-    var todolistView  = todoapp.registerView( 'todolist', todolist );
-    var todolistModel = todoapp.registerModel( 'todolist' );
-    var nrTodos       = 0;
+( function() {
+    var todolist = document.querySelector( '#todolist' );
+    var todolistView = new ToMvc.View( 'todolist', '#todolist' );
+    var todolistModel = new ToMvc.Model( 'todolist' );
+// TODO, create another app, to make sure that they do not interfere
+
 
     function init() {
-        document.querySelector('#add-todo button').addEventListener( 'click', addTodo, false);
+        document.querySelector( '#add-todo button' ).addEventListener( 'click', addTodo, false );
+
+        console.info( 'model', todolistModel );
+        var currentTodos = todolistModel.getCurrentTodos();
+        // var currentTodos = getCurrentTodos();
+        writeCurrentTodos( currentTodos );
 
         todolistModel.listenTo( 'todo:added', function( data ) {
-            var key = nrTodos++;
-            localStorage.setItem( nrTodos, data );
-        });
+            var key = window.localStorage.length + 1;
+            window.localStorage.setItem( key, data );
+        } );
     }
 
-    function addTodo() {
-        var text = window.prompt('enter event');
-        if (!text) return;
+    // model method
+    todolistModel.getCurrentTodos = function() {
+    // function getCurrentTodos() {
+        var list = [];
+        for ( var key in localStorage ) {
+            list.push( window.localStorage.getItem( key ) );
+        }
+        // TODO re-index keys because of deletions
+        return list;
+    }
 
-        var li         = document.createElement('li');
-        li.textContent = text;
-        todolist.appendChild(li);
+    function writeCurrentTodos( list ) {
+        list.forEach( function( item ) {
+            writeTodo( item );
+        } );
+    }
+
+    // view method
+    function addTodo() {
+        var text = window.prompt( 'enter event' );
+        if ( !text ) return;
+
+        writeTodo( text );
 
         // Added todo must be send to Model
-        todolistView.broadcast( 'todo:added', text);
+        todolistView.broadcast( 'todo:added', text );
 
         // Immediately ask for another todo to enter
         addTodo();
+    }
+
+    // view method
+    function writeTodo( text ) {
+        var li = document.createElement( 'li' );
+        li.textContent = text;
+        todolist.appendChild( li );
     }
 
 
     // GO!
     init();
 
-}());
+}() );
