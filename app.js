@@ -49,6 +49,7 @@
 
 ( function() {
     var todolistController = Object.create( ToMvc.Controller );
+    var todolistView, todolistModel;
 
     // var todolistView = Object.create( ToMvc.View );
     function TodolistView( name, el ) {
@@ -68,14 +69,16 @@
 
     todolistController.init = function() {
         var todolist = document.querySelector( '#todolist' );
-        var todolistView = new TodolistView( 'todolist', '#todolist' );
-        var todolistModel = new TodolistModel( 'todolist' );
+        todolistView = new TodolistView( 'todolist', '#todolist' );
+        todolistModel = new TodolistModel( 'todolist' );
 
-        document.querySelector( '#add-todo button' ).addEventListener( 'click', todolistView.addTodo, false );
+        // document.querySelector( '#add-todo button' ).addEventListener( 'click', todolistView.addTodo, false );
+        document.querySelector( '#add-todo button' ).addEventListener( 'click', function() {
+            todolistView.addTodo( todolistView );
+        }, false );
 
         var currentTodos = todolistModel.getCurrentTodos();
         todolistView.writeCurrentTodos( currentTodos );
-
 
         todolistModel.listenTo( 'todo:added', function( data ) {
             var key = window.localStorage.length + 1;
@@ -100,7 +103,8 @@
         } );
     };
 
-    // view method
+    // It's a pity we have to rely on the view instance...
+    // TODO: solve in a better way
     TodolistView.prototype.addTodo = function() {
         var text = window.prompt( 'enter event' );
         if ( !text ) return;
@@ -111,7 +115,7 @@
         todolistView.broadcast( 'todo:added', text );
 
         // Immediately ask for another todo to enter
-        todolistView.addTodo();
+        todolistView.addTodo( todolistView );
     };
 
     // view method

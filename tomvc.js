@@ -1,5 +1,7 @@
 ( function() {
 
+    'use strict';
+
     var ToMvc = function() {
 
         this.version = '0.1.0';
@@ -58,8 +60,8 @@
     Controller.prototype.addModel = function( name ) {
         this.models.push( name );
     };
-    Controller.prototype.addEvent = function( eventname, callback ) {
-        this.events.push( {
+    Controller.prototype.addEvent = function( eventname, callback, controller ) {
+        controller.events.push( {
             'eventname': eventname,
             'callback': callback
         } );
@@ -121,7 +123,7 @@
         // TODO change name in controller model array
     };
     tomvc.Model.prototype.listenTo = function( event, callback ) {
-        controller.addEvent.call( this, event, callback );
+        controller.addEvent.call( this, event, callback, controller );
     };
     tomvc.Model.prototype.broadcast = function( event, data ) {
         Controller.triggerEvent( event, data );
