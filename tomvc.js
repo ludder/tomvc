@@ -6,7 +6,6 @@
 
         this.version = '0.1.0';
 
-
         this.Controller = function() {
             return controller;
         };
