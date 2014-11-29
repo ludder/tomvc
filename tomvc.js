@@ -6,6 +6,7 @@
 
         this.version = '0.1.0';
 
+        // One controller to rule them all
         this.Controller = function() {
             return controller;
         };
@@ -13,7 +14,7 @@
         this.View = function( name, el ) {
             this.setName( name );
             this.el = el;
-            // console.info( 'con', controller );
+            // console.info( 'super', this.prototype );
             controller.addView( name );
         };
 
@@ -76,7 +77,7 @@
 
     // We don't want the Controller to be accessible from outside
     // Communications flow via View and Model
-    // These however, do not knwo of each others existince
+    // These however, do not know of each others existince
     // And communicate via events
     var tomvc = new ToMvc;
     var controller = new Controller;
