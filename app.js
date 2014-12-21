@@ -1,23 +1,22 @@
 ( function()
 {
-    var todolistController = new ToMvc.Controller(
-        function( view, model ) {
-            var todolist = document.querySelector( '#todolist' );
+    var todolistController = new ToMvc.Controller({
+            init: function( view, model ) {
+                var todolist = document.querySelector( '#todolist' );
 
-            document.querySelector( '#add-todo button' ).addEventListener( 'click', function() {
-                view.addTodo( view );
-            }, false );
+                document.querySelector( '#add-todo button' ).addEventListener( 'click', function() {
+                    view.addTodo( view );
+                }, false );
 
-            var currentTodos = model.getCurrentTodos();
-            console.info('view', view);
-            view.writeCurrentTodos( currentTodos );
+                var currentTodos = model.getCurrentTodos();
+                view.writeCurrentTodos( currentTodos );
 
-            model.listenTo( 'todo:added', function( data ) {
-                var key = window.localStorage.length + 1;
-                window.localStorage.setItem( key, data );
-            } );
-        },
-        {});
+                model.listenTo( 'todo:added', function( data ) {
+                    var key = window.localStorage.length + 1;
+                    window.localStorage.setItem( key, data );
+                } );
+            }
+        });
 
     var todolistView       = new ToMvc.View( {
         controller : todolistController,

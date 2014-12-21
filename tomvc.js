@@ -4,13 +4,12 @@
 
     var ToMvc = {};
 
-    var Controller = function( initFn, options ) {
+    var Controller = function( options ) {
         this.defaults = {};
         this.views = [];
         this.models = [];
         this.events = [];
 
-        this.init = initFn;
         extend.call( this, this.defaults, options );
     };
 
@@ -90,13 +89,6 @@
     /*
         View
      */
-    // Obsolete function?
-    // View.prototype.init = function( name, element ) {
-    //     console.info( 'huh', this );
-    //     this.setName( name );
-    //     this.el = element;
-    //     controller.addView( name ); // TODO
-    // };
     View.prototype.getDefaultViewName = function() {
         return 'view' + this.controller.getViews.length + 1;
     };
@@ -142,13 +134,15 @@
     ToMvc.Model = Model;
 
     // Make ToMvc globally available
-    window.ToMvc = ToMvc;
+    window.ToMvc = window.ToMvc || ToMvc;
 
     ///////////
     // Utils //
     ///////////
 
     // Based on http://youmightnotneedjquery.com/
+    // Extend functions to caller
+    // Extend all other options to given object
     var extend = function( out ) {
         out = out || {};
 
@@ -157,10 +151,11 @@
                 continue;
 
             for ( var key in arguments[ i ] ) {
+                // If it is a function, make it a method of the current instance
                 if ( typeof arguments[ i ][ key ] === 'function' ) {
                     this[key] = arguments[ i ][ key ];
-                }
-                if ( arguments[ i ].hasOwnProperty( key ) ) {
+                } else if ( arguments[ i ].hasOwnProperty( key ) ) {
+                    // else it's just a property
                     out[ key ] = arguments[ i ][ key ];
                 }
             }
