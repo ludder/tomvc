@@ -1,45 +1,57 @@
-( function() {
+( function( window ) {
 
     'use strict';
 
-    var ToMvc = function() {
+    var ToMvc = {};
 
-        this.version = '0.1.0';
-
-        // One controller to rule them all
-        this.Controller = function() {
-            return controller;
-        };
-
-        this.View = function( name, el ) {
-            this.setName( name );
-            this.el = el;
-            // console.info( 'super', this.prototype );
-            controller.addView( name );
-        };
-
-        this.Model = function( name ) {
-            this.name = 'model';
-        };
-    };
-
-
-    // ToMvc.prototype.Controller = function() {
-    var Controller = function() {
+    var Controller = function( initFn, options ) {
+        this.defaults = {};
         this.views = [];
         this.models = [];
         this.events = [];
+
+        this.init = initFn;
+        extend.call( this, this.defaults, options );
     };
-    var View = function( name, el ) {
-        // ToMvc.prototype.View = function( name, el ) {
-        this.setName( name );
-        this.el = el;
-        controller.addView( name );
+
+    var View = function( options ) {
+
+        // Controller is necessary
+        if ( options.controller ) {
+            this.controller = options.controller;
+        } else {
+            throw "View constructor requires controller";
+        }
+
+        // DOM element is necessary
+        if ( options.el ) {
+            this.el = options.el;
+        } else {
+            throw "View constructor requires DOM element";
+        }
+
+        // Default options
+        this.defaults = {
+            name: this.getDefaultViewName(),
+            listeners: []
+        };
+
+        // Extend defaults
+        extend.call( this, this.defaults, options );
+
+        this.controller.registerView()
+        this.setName( options.name );
     };
-    // var Model = function() {
-    // ToMvc.prototype.Model = function() {
-    //     this.name = 'model';
-    // };
+
+    var Model = function( options ) {
+        this.defaults = {
+            name: 'modelTODO',
+            listeners: []
+        };
+
+        extend.call( this, this.defaults, options );
+
+    };
 
 
     /*
@@ -54,10 +66,10 @@
     Controller.prototype.getEvents = function() {
         return this.events;
     };
-    Controller.prototype.addView = function( name ) {
+    Controller.prototype.registerView = function( name ) {
         this.views.push( name );
     };
-    Controller.prototype.addModel = function( name ) {
+    Controller.prototype.registerModel = function( name ) {
         this.models.push( name );
     };
     Controller.prototype.addEvent = function( eventname, callback, controller ) {
@@ -75,35 +87,29 @@
         } );
     };
 
-    // We don't want the Controller to be accessible from outside
-    // Communications flow via View and Model
-    // These however, do not know of each others existince
-    // And communicate via events
-    var tomvc = new ToMvc;
-    var controller = new Controller;
-
-
-
     /*
         View
      */
     // Obsolete function?
-    tomvc.View.init = function( name, element ) {
-        console.info( 'huh', this );
-        this.setName( name );
-        this.el = element;
-        controller.addView( name ); // TODO
+    // View.prototype.init = function( name, element ) {
+    //     console.info( 'huh', this );
+    //     this.setName( name );
+    //     this.el = element;
+    //     controller.addView( name ); // TODO
+    // };
+    View.prototype.getDefaultViewName = function() {
+        return 'view' + this.controller.getViews.length + 1;
     };
-    tomvc.View.prototype.getName = function() {
+    View.prototype.getName = function() {
         return this.name;
     };
-    tomvc.View.prototype.setName = function( name ) {
-        this.name = name;
+    View.prototype.setName = function( name ) {
+        this.name = name || 'view';
     };
-    tomvc.View.prototype.listenTo = function( event, callback ) {
+    View.prototype.listenTo = function( event, callback ) {
         controller.addEvent.call( this, event, callback );
     };
-    tomvc.View.prototype.broadcast = function( event, data ) {
+    View.prototype.broadcast = function( event, data ) {
         controller.triggerEvent( event, data );
     };
 
@@ -111,47 +117,79 @@
     /*
         Model
      */
-    tomvc.Model.prototype.init = function( name ) {
+    Model.prototype.init = function( name ) {
         this.setName( name );
         Controller.addModel( this.name );
     };
-    tomvc.Model.prototype.getName = function() {
+    Model.prototype.getName = function() {
         return this.name;
     };
-    tomvc.Model.prototype.setName = function( name ) {
+    Model.prototype.setName = function( name ) {
         this.name = name;
         // TODO change name in controller model array
     };
-    tomvc.Model.prototype.listenTo = function( event, callback ) {
+    Model.prototype.listenTo = function( event, callback ) {
         controller.addEvent.call( this, event, callback, controller );
     };
-    tomvc.Model.prototype.broadcast = function( event, data ) {
+    Model.prototype.broadcast = function( event, data ) {
         Controller.triggerEvent( event, data );
     };
 
-    // Make ToMvc globally available
-    window.ToMvc = tomvc;
+    // Wrap up
+    ToMvc.version = '0.1.0';
+    ToMvc.Controller = Controller;
+    ToMvc.View = View;
+    ToMvc.Model = Model;
 
-}() );
+    // Make ToMvc globally available
+    window.ToMvc = ToMvc;
+
+    ///////////
+    // Utils //
+    ///////////
+
+    // Based on http://youmightnotneedjquery.com/
+    var extend = function( out ) {
+        out = out || {};
+
+        for ( var i = 1; i < arguments.length; i++ ) {
+            if ( !arguments[ i ] )
+                continue;
+
+            for ( var key in arguments[ i ] ) {
+                if ( typeof arguments[ i ][ key ] === 'function' ) {
+                    this[key] = arguments[ i ][ key ];
+                }
+                if ( arguments[ i ].hasOwnProperty( key ) ) {
+                    out[ key ] = arguments[ i ][ key ];
+                }
+            }
+        }
+
+        return out;
+    };
+
+
+}( window ) );
 
 /*
     Example
  */
-function SubView( name, el ) {
-    ToMvc.View.call( this, name, el ); // call super constructor.
-}
+// function SubView( name, el ) {
+//     ToMvc.View.call( this, name, el ); // call super constructor.
+// }
 
 // subclass extends superclass
-SubView.prototype = Object.create( ToMvc.View.prototype );
-SubView.prototype.constructor = SubView;
+// SubView.prototype = Object.create( ToMvc.View.prototype );
+// SubView.prototype.constructor = SubView;
 
 // var c = ToMvc.Controller.addView();
 // console.info( 'c', c );
 
 
-var x = new SubView( 'aap' );
-console.info( 'views', x.getName() );
-var y = new SubView( 'neushoorn' );
-console.info( 'views', y.getName() );
-var z = new ToMvc.View( 'geit' );
-console.info( 'views', z.getName() );
+// var x = new SubView( 'aap' );
+// console.info( 'views', x.getName() );
+// var y = new SubView( 'neushoorn' );
+// console.info( 'views', y.getName() );
+// var z = new ToMvc.View( 'geit' );
+// console.info( 'views', z.getName() );
