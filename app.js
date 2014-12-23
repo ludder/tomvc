@@ -47,6 +47,7 @@
     });
 
     var todolistModel = new ToMvc.Model({
+        controller : todolistController,
         name:'todolist',
         getCurrentTodos : function() {
             var list = [];

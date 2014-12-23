@@ -48,6 +48,13 @@
             listeners: []
         };
 
+        // Controller is necessary
+        if ( options.controller ) {
+            this.controller = options.controller;
+        } else {
+            throw "Model constructor requires controller";
+        }
+
         extend.call( this, this.defaults, options );
 
     };
@@ -72,7 +79,7 @@
         this.models.push( name );
     };
     Controller.prototype.addEvent = function( eventname, callback, controller ) {
-        controller.events.push( {
+        this.controller.events.push( {
             'eventname': eventname,
             'callback': callback
         } );
@@ -99,10 +106,10 @@
         this.name = name || 'view';
     };
     View.prototype.listenTo = function( event, callback ) {
-        controller.addEvent.call( this, event, callback );
+        this.controller.addEvent.call( this, event, callback );
     };
     View.prototype.broadcast = function( event, data ) {
-        controller.triggerEvent( event, data );
+        this.controller.triggerEvent( event, data );
     };
 
 
@@ -121,10 +128,10 @@
         // TODO change name in controller model array
     };
     Model.prototype.listenTo = function( event, callback ) {
-        controller.addEvent.call( this, event, callback, controller );
+        this.controller.addEvent.call( this, event, callback, this.lcontroller );
     };
     Model.prototype.broadcast = function( event, data ) {
-        Controller.triggerEvent( event, data );
+        this.controller.triggerEvent( event, data );
     };
 
     // Wrap up
@@ -170,13 +177,21 @@
 /*
     Example
  */
-// function SubView( name, el ) {
-//     ToMvc.View.call( this, name, el ); // call super constructor.
-// }
+function SubView( name, el ) {
+    // ToMvc.View.call( this, name, el ); // call super constructor.
+}
 
 // subclass extends superclass
-// SubView.prototype = Object.create( ToMvc.View.prototype );
-// SubView.prototype.constructor = SubView;
+// Note: must be established before adding prototpye methods
+SubView.prototype = Object.create( ToMvc.View.prototype );
+SubView.prototype.constructor = SubView;
+
+// Another way to achieve the same
+// Function.prototype.extends = function(superclass) {
+//     this.prototype = Object.create(superclass.prototype);
+//     this.prototype.constructor = this;
+// }
+// Subview.extends(ToMvc.View);
 
 // var c = ToMvc.Controller.addView();
 // console.info( 'c', c );
