@@ -1,10 +1,10 @@
 {
   "name": "ToMvc",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Basic MVC framework",
   "main": "index.html",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "testem"
   },
   "repository": {
     "type": "git",
