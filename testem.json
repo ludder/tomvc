@@ -1,0 +1,16 @@
+{
+    "framework": "mocha+chai",
+    "src_files": [
+        "node_modules/chai/chai.js",
+        "node_modules/mocha/mocha.js",
+        "tomvc.js",
+        "**/*.js"
+    ],
+    "src_files_ignore": [
+        "node_modules/**/*.js",
+        "Gruntfile.js"
+    ],
+    "launch_in_ci": ["PhantomJS"],
+    "launch_in_dev": ["PhantomJS"],
+    "reporting": "spec"
+}

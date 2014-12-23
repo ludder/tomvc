@@ -4,9 +4,12 @@
             init: function( view, model ) {
                 var todolist = document.querySelector( '#todolist' );
 
-                document.querySelector( '#add-todo button' ).addEventListener( 'click', function() {
-                    view.addTodo( view );
-                }, false );
+                var actionButton = document.querySelector( '#add-todo button' );
+                if (actionButton) {
+                    actionButton.addEventListener( 'click', function() {
+                        view.addTodo( view );
+                    }, false );
+                }
 
                 var currentTodos = model.getCurrentTodos();
                 view.writeCurrentTodos( currentTodos );
