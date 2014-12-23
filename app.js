@@ -1,64 +1,69 @@
-( function() {
-    var todolist = document.querySelector( '#todolist' );
-    var todolistView = new ToMvc.View( 'todolist', '#todolist' );
-    var todolistModel = new ToMvc.Model( 'todolist' );
-// TODO, create another app, to make sure that they do not interfere
+( function()
+{
+    var todolistController = new ToMvc.Controller({
+            init: function( view, model ) {
+                var todolist = document.querySelector( '#todolist' );
 
+                document.querySelector( '#add-todo button' ).addEventListener( 'click', function() {
+                    view.addTodo( view );
+                }, false );
 
-    function init() {
-        document.querySelector( '#add-todo button' ).addEventListener( 'click', addTodo, false );
+                var currentTodos = model.getCurrentTodos();
+                view.writeCurrentTodos( currentTodos );
 
-        console.info( 'model', todolistModel );
-        var currentTodos = todolistModel.getCurrentTodos();
-        // var currentTodos = getCurrentTodos();
-        writeCurrentTodos( currentTodos );
+                model.listenTo( 'todo:added', function( data ) {
+                    var key = window.localStorage.length + 1;
+                    window.localStorage.setItem( key, data );
+                } );
+            }
+        });
 
-        todolistModel.listenTo( 'todo:added', function( data ) {
-            var key = window.localStorage.length + 1;
-            window.localStorage.setItem( key, data );
-        } );
-    }
+    var todolistView       = new ToMvc.View( {
+        controller : todolistController,
+        name       : 'todolist',
+        el         : '#todolist',
+        writeCurrentTodos : function( list ) {
+            list.forEach( function( item ) {
+                todolistView.writeTodo( item );
+            } );
+        },
+        addTodo : function() {
+            var text = window.prompt( 'enter event' );
+            if ( !text ) return;
 
-    // model method
-    todolistModel.getCurrentTodos = function() {
-    // function getCurrentTodos() {
-        var list = [];
-        for ( var key in localStorage ) {
-            list.push( window.localStorage.getItem( key ) );
+            this.writeTodo( text );
+
+            // Added todo must be send to Model
+            this.broadcast( 'todo:added', text );
+
+            // Immediately ask for another todo to enter
+            this.addTodo( this );
+        },
+        writeTodo : function( text ) {
+            var li = document.createElement( 'li' );
+            li.textContent = text;
+            todolist.appendChild( li );
         }
-        // TODO re-index keys because of deletions
-        return list;
-    }
+    });
 
-    function writeCurrentTodos( list ) {
-        list.forEach( function( item ) {
-            writeTodo( item );
-        } );
-    }
+    var todolistModel = new ToMvc.Model({
+        controller : todolistController,
+        name:'todolist',
+        getCurrentTodos : function() {
+            var list = [];
+            for ( var key in localStorage ) {
+                list.push( window.localStorage.getItem( key ) );
+            }
+            // TODO re-index keys because of deletions
+            return list;
+        }
+    });
 
-    // view method
-    function addTodo() {
-        var text = window.prompt( 'enter event' );
-        if ( !text ) return;
 
-        writeTodo( text );
-
-        // Added todo must be send to Model
-        todolistView.broadcast( 'todo:added', text );
-
-        // Immediately ask for another todo to enter
-        addTodo();
-    }
-
-    // view method
-    function writeTodo( text ) {
-        var li = document.createElement( 'li' );
-        li.textContent = text;
-        todolist.appendChild( li );
-    }
-
+    // TODO, create another app, to make sure that they do not interfere
 
     // GO!
-    init();
+    console.info('todolistController', todolistController);
+    todolistController.init( todolistView, todolistModel );
 
 }() );
