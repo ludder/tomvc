@@ -57,6 +57,9 @@
 
         extend.call( this, this.defaults, options );
 
+        this.controller.registerModel()
+        this.setName( options.name );
+
     };
 
 
