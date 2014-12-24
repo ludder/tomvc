@@ -46,8 +46,48 @@ describe( 'View', function() {
         view = null;
     } );
 
-    it( 'should register views', function() {
-        assert.ok( true );
+    describe( 'view instantiation', function() {
+
+        it( 'should throw an error when no controller is provided', function() {
+            assert.throw( function() {
+                view = new ToMvc.View( {} );
+            }, /View constructor requires controller/ );
+        } );
+
+        it( 'should throw an error when no DOM element is provided', function() {
+            assert.throw( function() {
+                view = new ToMvc.View( {
+                    controller: controller
+                } );
+            }, /View constructor requires DOM element/ );
+        } );
     } );
+
+    it( 'should generate a default view name if not provided', function() {
+        view = new ToMvc.View( {
+            controller: controller,
+            el: '#testElement'
+        } );
+        assert.equal( 'view1', view.getDefaultViewName() );
+    } );
+
+    it( 'should use the default view name if not provided', function() {
+        view = new ToMvc.View( {
+            controller: controller,
+            el: '#testElement'
+        } );
+        assert.equal( 'view1', view.getName() );
+    } );
+
+    it( 'should not use the default view name if a name is provided', function() {
+        view = new ToMvc.View( {
+            controller: controller,
+            el: '#testElement',
+            name: 'myView'
+        } );
+        assert.equal( 'myView', view.getName() );
+    } );
+
+
 
 } );

@@ -31,15 +31,14 @@
 
         // Default options
         this.defaults = {
-            name: this.getDefaultViewName(),
             listeners: []
         };
 
         // Extend defaults
         extend.call( this, this.defaults, options );
 
-        this.controller.registerView()
         this.setName( options.name );
+        this.controller.registerView( this.getName() );
     };
 
     var Model = function( options ) {
@@ -57,9 +56,8 @@
 
         extend.call( this, this.defaults, options );
 
-        this.controller.registerModel()
+        this.controller.registerModel();
         this.setName( options.name );
-
     };
 
 
@@ -100,13 +98,13 @@
         View
      */
     View.prototype.getDefaultViewName = function() {
-        return 'view' + this.controller.getViews.length + 1;
+        return 'view' + ( this.controller.getViews.length + 1 );
     };
     View.prototype.getName = function() {
         return this.name;
     };
     View.prototype.setName = function( name ) {
-        this.name = name || 'view';
+        this.name = name || this.getDefaultViewName();
     };
     View.prototype.listenTo = function( event, callback ) {
         this.controller.addEvent.call( this, event, callback );
@@ -163,7 +161,7 @@
             for ( var key in arguments[ i ] ) {
                 // If it is a function, make it a method of the current instance
                 if ( typeof arguments[ i ][ key ] === 'function' ) {
-                    this[key] = arguments[ i ][ key ];
+                    this[ key ] = arguments[ i ][ key ];
                 } else if ( arguments[ i ].hasOwnProperty( key ) ) {
                     // else it's just a property
                     out[ key ] = arguments[ i ][ key ];
