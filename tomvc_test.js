@@ -1,3 +1,4 @@
+var chai = chai || require( 'chai' ); // testem knows chai, but pure Mocha in Travis doesn't
 var assert = chai.assert;
 
 describe( 'Controller', function() {
@@ -6,7 +7,6 @@ describe( 'Controller', function() {
 
     beforeEach( function() {
         controller = new ToMvc.Controller;
-        view = null;
     } );
 
     afterEach( function() {
@@ -31,6 +31,23 @@ describe( 'Controller', function() {
         } );
         assert.lengthOf( controller.models, 1, 'there should be 1 registered model' );
     } );
+} );
 
+describe( 'View', function() {
+
+    var view, controller;
+
+    beforeEach( function() {
+        controller = new ToMvc.Controller;
+    } );
+
+    afterEach( function() {
+        controller = null;
+        view = null;
+    } );
+
+    it( 'should register views', function() {
+        assert.ok( true );
+    } );
 
 } );

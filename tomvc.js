@@ -175,7 +175,7 @@
     };
 
 
-}( window ) );
+}( typeof window == "undefined" ? global : window ) ); // window not available in node
 
 /*
     Example
