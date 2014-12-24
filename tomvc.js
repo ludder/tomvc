@@ -43,7 +43,6 @@
 
     var Model = function( options ) {
         this.defaults = {
-            name: 'modelTODO',
             listeners: []
         };
 
@@ -56,8 +55,8 @@
 
         extend.call( this, this.defaults, options );
 
-        this.controller.registerModel();
         this.setName( options.name );
+        this.controller.registerModel( this.getName() );
     };
 
 
@@ -65,13 +64,13 @@
         Controller
     */
     Controller.prototype.getViews = function() {
-        return this.views;
+        return this.views.slice();
     };
     Controller.prototype.getModels = function() {
-        return this.models;
+        return this.models.slice();
     };
     Controller.prototype.getEvents = function() {
-        return this.events;
+        return this.events.slice();
     };
     Controller.prototype.registerView = function( name ) {
         this.views.push( name );
@@ -97,14 +96,14 @@
     /*
         View
      */
-    View.prototype.getDefaultViewName = function() {
-        return 'view' + ( this.controller.getViews.length + 1 );
+    View.prototype.getDefaultName = function() {
+        return 'view' + ( this.controller.getViews().length + 1 );
     };
     View.prototype.getName = function() {
         return this.name;
     };
     View.prototype.setName = function( name ) {
-        this.name = name || this.getDefaultViewName();
+        this.name = name || this.getDefaultName();
     };
     View.prototype.listenTo = function( event, callback ) {
         this.controller.addEvent.call( this, event, callback );
@@ -121,12 +120,14 @@
         this.setName( name );
         Controller.addModel( this.name );
     };
+    Model.prototype.getDefaultName = function() {
+        return 'model' + ( this.controller.getModels().length + 1 );
+    };
     Model.prototype.getName = function() {
         return this.name;
     };
     Model.prototype.setName = function( name ) {
-        this.name = name;
-        // TODO change name in controller model array
+        this.name = name || this.getDefaultName();
     };
     Model.prototype.listenTo = function( event, callback ) {
         this.controller.addEvent.call( this, event, callback, this.lcontroller );
