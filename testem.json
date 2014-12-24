@@ -4,7 +4,7 @@
         "node_modules/chai/chai.js",
         "node_modules/mocha/mocha.js",
         "tomvc.js",
-        "**/*.js"
+        "test/**/*.js"
     ],
     "src_files_ignore": [
         "node_modules/**/*.js",
