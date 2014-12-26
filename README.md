@@ -71,7 +71,7 @@ var mySubview = new SubView( {
   - See: package.json
 - Unit tests: `testem`
 - Grunt web server: `grunt`
-- Package build: TODO
+- Package build: `grunt build` (generates minified version in `dest` folder)
 
 
 ## License
