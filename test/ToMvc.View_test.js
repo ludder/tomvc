@@ -29,22 +29,34 @@ describe( 'View', function() {
                 } );
             }, /View constructor requires DOM element/ );
         } );
+        it( 'should use the default view name if not provided', function() {
+            view = new ToMvc.View( {
+                controller: controller,
+                el: '#testElement'
+            } );
+            assert.equal( 'view1', view.getName() );
+        } );
+
+        it( 'should not use the default view name if a name is provided', function() {
+            view = new ToMvc.View( {
+                controller: controller,
+                el: '#testElement',
+                name: 'myView'
+            } );
+            assert.equal( 'myView', view.getName() );
+        } );
     } );
 
-    it( 'should use the default view name if not provided', function() {
-        view = new ToMvc.View( {
-            controller: controller,
-            el: '#testElement'
+    describe( 'subclassing', function() {
+
+        it( 'should create an derived view class', function() {
+            var SubView = ToMvc.View.extend();
+            var mySubview = new SubView( {
+                controller: new ToMvc.Controller,
+                el: 'body'
+            } );
+            assert.instanceOf( mySubview, ToMvc.View );
         } );
-        assert.equal( 'view1', view.getName() );
     } );
 
-    it( 'should not use the default view name if a name is provided', function() {
-        view = new ToMvc.View( {
-            controller: controller,
-            el: '#testElement',
-            name: 'myView'
-        } );
-        assert.equal( 'myView', view.getName() );
-    } );
 } );
