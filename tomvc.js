@@ -4,19 +4,25 @@
 
     var ToMvc = {};
 
+    /*
+        Controller constructor
+     */
     var Controller = function( options ) {
         this.defaults = {};
         this.views = [];
         this.models = [];
         this.events = [];
 
-        extend.call( this, this.defaults, options );
+        merge.call( this, this.defaults, options );
     };
 
+    /*
+        View constructor
+     */
     var View = function( options ) {
 
         // Controller is necessary
-        if ( options.controller ) {
+        if ( options && options.controller ) {
             this.controller = options.controller;
         } else {
             throw "View constructor requires controller";
@@ -35,12 +41,16 @@
         };
 
         // Extend defaults
-        extend.call( this, this.defaults, options );
+        merge.call( this, this.defaults, options );
 
         this.setName( options.name );
         this.controller.registerView( this.getName() );
+
     };
 
+    /*
+        Model constructor
+     */
     var Model = function( options ) {
         this.defaults = {
             listeners: []
@@ -53,11 +63,30 @@
             throw "Model constructor requires controller";
         }
 
-        extend.call( this, this.defaults, options );
+        merge.call( this, this.defaults, options );
 
         this.setName( options.name );
         this.controller.registerModel( this.getName() );
     };
+
+    /*
+        Make OOP possible
+     */
+    function extend() {
+        var parent = this; // ToMvc.Controller || ToMvc.View || ToMvc.Model
+
+        var extended = function( options ) {
+            parent.call( this, options ); // call super constructor.
+        }
+        // Do the OOP trick:
+        extended.prototype = Object.create( parent.prototype );
+        extended.prototype.constructor = extended;
+
+        return extended;
+    }
+
+    // Add extend option to all basic ToMvc methods
+    Controller.extend = View.extend = Model.extend = extend;
 
 
     /*
@@ -112,7 +141,6 @@
         this.controller.triggerEvent( event, data );
     };
 
-
     /*
         Model
      */
@@ -137,7 +165,7 @@
     };
 
     // Wrap up
-    ToMvc.version = '0.1.0';
+    ToMvc.version = '0.2.0';
     ToMvc.Controller = Controller;
     ToMvc.View = View;
     ToMvc.Model = Model;
@@ -152,7 +180,7 @@
     // Based on http://youmightnotneedjquery.com/
     // Extend functions to caller
     // Extend all other options to given object
-    var extend = function( out ) {
+    var merge = function( out ) {
         out = out || {};
 
         for ( var i = 1; i < arguments.length; i++ ) {
@@ -179,14 +207,34 @@
 /*
     Example
  */
-function SubView( name, el ) {
-    // ToMvc.View.call( this, name, el ); // call super constructor.
+var SubView = ToMvc.View.extend();
+SubView.prototype.getTest = function() {
+    console.info( 'TEST!' );
 }
-
 // subclass extends superclass
 // Note: must be established before adding prototpye methods
-SubView.prototype = Object.create( ToMvc.View.prototype );
-SubView.prototype.constructor = SubView;
+// SubView.prototype = Object.create( ToMvc.View.prototype );
+// SubView.prototype.constructor = SubView;
+
+var c = new ToMvc.Controller();
+var s = new SubView( {
+    controller: c,
+    el: 'body'
+} );
+console.info( 'test de subview', s.getDefaultName() );
+s.getTest();
+var s2 = new SubView( {
+    controller: c,
+    el: 'body'
+} );
+console.info( 'test de subview2', s2.getDefaultName() );
+s2.getTest();
+
+var subModel = ToMvc.Model.extend();
+var m = new subModel( {
+    controller: c
+} )
+console.info( 'test de submodel', m.getDefaultName() );
 
 // Another way to achieve the same
 // Function.prototype.extends = function(superclass) {

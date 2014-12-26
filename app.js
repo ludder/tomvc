@@ -36,7 +36,9 @@
 
             this.writeTodo( text );
 
-            // Added todo must be send to Model
+            // var todoId = this.controller.getId(); // HIER GEBLEVEN
+
+            // Model gets notified of added Todo
             this.broadcast( 'todo:added', text );
 
             // Immediately ask for another todo to enter
@@ -44,6 +46,7 @@
         },
         writeTodo : function( text ) {
             var li = document.createElement( 'li' );
+            // var input = document.createElement( 'input' );
             li.textContent = text;
             todolist.appendChild( li );
         }
