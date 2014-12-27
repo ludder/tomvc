@@ -3,6 +3,8 @@ var assert = chai.assert;
 
 describe( 'View', function() {
 
+    'use strict';
+
     var view, controller;
 
     beforeEach( function() {

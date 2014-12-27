@@ -73,11 +73,12 @@
         Make OOP possible
      */
     function extend() {
+        /*jshint validthis: true */
         var parent = this; // ToMvc.Controller || ToMvc.View || ToMvc.Model
 
         var extended = function( options ) {
             parent.call( this, options ); // call super constructor.
-        }
+        };
         // Do the OOP trick:
         extended.prototype = Object.create( parent.prototype );
         extended.prototype.constructor = extended;
@@ -184,8 +185,9 @@
         out = out || {};
 
         for ( var i = 1; i < arguments.length; i++ ) {
-            if ( !arguments[ i ] )
+            if ( !arguments[ i ] ) {
                 continue;
+            }
 
             for ( var key in arguments[ i ] ) {
                 // If it is a function, make it a method of the current instance
@@ -202,4 +204,4 @@
     };
 
 
-}( typeof window == "undefined" ? global : window ) ); // window not available in node
+}( typeof window === "undefined" ? global : window ) ); // window not available in node

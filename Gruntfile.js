@@ -1,5 +1,5 @@
 module.exports = function( grunt ) {
-
+    'use strict';
     // Project configuration.
     grunt.initConfig( {
         pkg: grunt.file.readJSON( 'package.json' ),
@@ -30,16 +30,24 @@ module.exports = function( grunt ) {
                     'dest/tomvc.min.js': [ 'tomvc.js' ]
                 }
             }
+        },
+        jshint: {
+            options: {
+                jshintrc: true
+            },
+            all: ['Gruntfile.js', '*.js', 'test/**/*.js']
         }
     } );
 
     // Load the plugin that provides the "uglify" task.
     grunt.loadNpmTasks( 'grunt-contrib-connect' );
+    grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks( 'grunt-contrib-uglify' );
     grunt.loadNpmTasks( 'grunt-contrib-watch' );
 
     // Default task(s).
     grunt.registerTask( 'default', [ 'connect', 'watch' ] );
-    grunt.registerTask( 'build', [ 'uglify' ] );
+    grunt.registerTask( 'build', [ 'test', 'uglify' ] );
+    grunt.registerTask( 'test', [ 'jshint' ] );
 
 };

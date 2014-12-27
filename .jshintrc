@@ -1,0 +1,22 @@
+{
+  "strict"    : true,
+  "curly"     : true,
+  "eqnull"    : true,
+  "eqeqeq"    : true,
+  "maxparams" : 3,
+  "undef"     : true,
+  "-W058"     : true,
+  "globals"  : {
+    "window"     : true,
+    "global"     : true,
+    "document"   : true,
+    "require"    : true,
+    "module"     : true,
+    "ToMvc"      : true,
+    "describe"   : true,
+    "beforeEach" : true,
+    "afterEach"  : true,
+    "it"         : true,
+    "jQuery"     : false
+  }
+}
