@@ -14,10 +14,15 @@
 
             var currentTodos = model.getCurrentTodos();
             view.writeCurrentTodos( currentTodos );
+            view.listenTo( 'todo:added', function( data ) {
+                view.writeTodo( data );
+            } );
 
-            model.listenTo( 'todo:added', function( data ) {
+            model.listenTo( 'todo:created', function( data ) {
                 var key = window.localStorage.length + 1;
-                window.localStorage.setItem( key, data );
+                data.id = key;
+                window.localStorage.setItem( key, JSON.stringify(data) );
+                model.broadcast( 'todo:added', data );
             } );
         }
     } );
@@ -37,24 +42,27 @@
                 return;
             }
 
-            this.writeTodo( text );
+            // this.writeTodo( text );
 
             var data = {
-
+                text: text,
+                id: null,
+                status: 'active'
             };
 
             // var todoId = this.controller.getId(); // HIER GEBLEVEN
 
-            // Model gets notified of added Todo
-            this.broadcast( 'todo:added', text );
+            // Notify Model of added Todo
+            this.broadcast( 'todo:created', data );
 
             // Immediately ask for another todo to enter
             this.addTodo( this );
         },
-        writeTodo: function( text ) {
+        writeTodo: function( data ) {
             var li = document.createElement( 'li' );
             // var input = document.createElement( 'input' );
-            li.textContent = text;
+            li.setAttribute( 'data-todoId', data.id );
+            li.textContent = data.text;
             document.querySelector( this.el ).appendChild( li );
         }
     } );
@@ -64,6 +72,7 @@
         name: 'todolist',
         getCurrentTodos: function() {
             var list = [];
+            // TODO: breaks in Firefox??
             for ( var key in window.localStorage ) {
                 list.push( window.localStorage.getItem( key ) );
             }
