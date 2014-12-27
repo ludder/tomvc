@@ -4,6 +4,8 @@ node_js:
 before_install:
     - npm install -g mocha
     - npm install chai
+    - npm install -g grunt-cli
 script:
     - mocha tomvc.js test/*.js
+    - grunt jshint
 
