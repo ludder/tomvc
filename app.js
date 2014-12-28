@@ -21,7 +21,7 @@
             model.listenTo( 'todo:created', function( data ) {
                 var key = window.localStorage.length + 1;
                 data.id = key;
-                window.localStorage.setItem( key, JSON.stringify(data) );
+                window.localStorage.setItem( key, JSON.stringify( data ) );
                 model.broadcast( 'todo:added', data );
             } );
         }
@@ -71,12 +71,17 @@
         controller: todolistController,
         name: 'todolist',
         getCurrentTodos: function() {
-            var list = [];
-            // TODO: breaks in Firefox??
-            for ( var key in window.localStorage ) {
-                list.push( window.localStorage.getItem( key ) );
+            var list = [],
+                data, key;
+
+            for ( var i = 0; i < window.localStorage.length; i++ ) {
+                key = window.localStorage.key( i );
+                data = window.localStorage.getItem( key );
+                if ( data ) {
+                    list.push( JSON.parse( data ) );
+                }
             }
-            // TODO re-index keys because of deletions
+            // TODO re-index keys because of deletions?
             return list;
         }
     } );
