@@ -1,6 +1,6 @@
 {
   "name": "ToMvc",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Basic MVC framework",
   "main": "index.html",
   "scripts": {
