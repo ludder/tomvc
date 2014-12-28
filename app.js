@@ -5,6 +5,7 @@
         init: function( view, model ) {
             var todolist = document.querySelector( '#todolist' );
 
+            // TODO: move to app
             var actionButton = document.querySelector( '#add-todo button' );
             if ( actionButton ) {
                 actionButton.addEventListener( 'click', function() {
@@ -19,9 +20,9 @@
             } );
 
             model.listenTo( 'todo:created', function( data ) {
-                var key = window.localStorage.length + 1;
-                data.id = key;
-                window.localStorage.setItem( key, JSON.stringify( data ) );
+                // var key = window.localStorage.length + 1;
+                data.id = model.getNewId();
+                window.localStorage.setItem( data.id, JSON.stringify( data ) );
                 model.broadcast( 'todo:added', data );
             } );
         }
@@ -77,12 +78,26 @@
             for ( var i = 0; i < window.localStorage.length; i++ ) {
                 key = window.localStorage.key( i );
                 data = window.localStorage.getItem( key );
-                if ( data ) {
-                    list.push( JSON.parse( data ) );
-                }
+                list.push( JSON.parse( data ) );
             }
             // TODO re-index keys because of deletions?
             return list;
+        },
+        // Find highest ID and return (highest ID + 1)
+        getNewId: function() {
+            var list = [],
+                key, item;
+            for ( var i = 0; i < window.localStorage.length; i++ ) {
+                key = window.localStorage.key( i );
+                item = window.localStorage.getItem( key );
+                list.push( this.getIdFromLocalstorageDataObject( item ) );
+            }
+            var max_id = Math.max.apply( Math, list );
+            return ( max_id > 0 ) ? ( max_id + 1 ) : 1;
+        },
+        getIdFromLocalstorageDataObject: function( item ) {
+            item = JSON.parse( item );
+            return ( typeof item.id === 'number' ) ? item.id : 0;
         }
     } );
 
